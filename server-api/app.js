@@ -22,7 +22,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use("/testAPI", testAPIRouter)
 PeersRouter.init()
-app.use("/Peers", PeersRouter)
+app.use("/peers", PeersRouter)
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
