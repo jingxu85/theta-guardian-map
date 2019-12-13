@@ -10,8 +10,13 @@ class Node {
 	constructor(body) {
 		this._visited = 0;
 		this._id = body.id;
-		if (body.peers) {
-			this._peer=body.peers;
+		if (body.peers) {//TODO: change
+			if (Array.isArray(body.peers)) {
+				this._peer=body.peers[0];
+			}
+			else {
+				this._peer=body.peers
+			}
 		} else {
 			this._peer={};
 		}
@@ -22,12 +27,12 @@ class Node {
 				geoInfo = geo2Ip.city(body.ip);
 				if (geoInfo != null){
 					this._city = geoInfo["city"]["names"]["en"];
+					this._country = geoInfo["country"]["names"]["en"];
 					this._latitude = geoInfo["location"]["latitude"];
 					this._longitude = geoInfo["location"]["longitude"];
 				}
-
 				console.log("geoInfo is " + JSON.stringify(geoInfo));
-				console.log("city is " + this._city + " latitude is " + this._latitude + " longtitude is " + this._longitude);
+				console.log("city is " + this._city + " country is " + this._country + " latitude is " + this._latitude + " longtitude is " + this._longitude);
 			} catch (err) {
 				console.log("GEO Error - failed to get the geoInfo for " + body.ip + ", " + err);
 			}
@@ -102,11 +107,10 @@ class NodeMap {
 	}
 
 	get map() {
-		console.log("xj3 here")
 		var nodes = []
 		for (k in this.nMap) {
 			console.log("xj3 k is " + k.toString())
-			console.log("xj3 v is " + this.nMap[k].toString())
+			console.log("xj3 v is " + JSON.stringify(this.nMap[k]))
 			nodes.push({Peer: k, Details: this.nMap[k]})
 		}
 		return {Nodes : nodes};
@@ -139,7 +143,7 @@ router.post("/get", function(req, res, next) {
 	}
 	for (k in toReturn) {
 		console.log("xj2 k is " + k.toString())
-		console.log("xj2 v is " + toReturn[k].toString())
+		console.log("xj2 v is " + JSON.stringify(toReturn[k]))
 	}
 
 	res.json(toReturn);
