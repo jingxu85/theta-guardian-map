@@ -9,51 +9,70 @@ import './App.css';
 class App extends Component {
   constructor(props) {
       super(props);
-      this.state = { nodes : [], chosen : -1, connected : []};
-  }
-
-  async callAPI() {
-    const response = await fetch('http://34.220.181.170:9000/peers/get', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ example: 'data' }),
-    })
-    var resJson = await response.json()
-    var nodes = resJson.Nodes
-     if (nodes && nodes.length > 0) {
-      var map = {}
-      nodes.map((node, index) => {
-        map[node.Details._id] = index
-      })
-      this.aMap = map
-      this.Nodes = nodes
-      this.setState({nodes : nodes, chosen : -1, conn : []})
-    }
+      this.page = 0;
+      this.aMap = {};
+      this.chosenNode = null;
+      this.state = { nodes : [], chosen : this.chosenNode, connected : [], page : 0};
   }
   
-  componentDidMount() {
-    this.callAPI();
+  async loadTable() {
+    // pagination
+    const test_response = await fetch('http://guardian-metrics.thetatoken.org:9000/peers/testdb', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ page: this.page, amount: 100}),
+    });
+    var resJson = await test_response.json();
+    console.log("for test DB, response is ", resJson);
+    if (resJson && resJson.length > 0) {
+      for (let i = 0; i < resJson.length; i++) {
+        this.aMap[resJson[i]._id] = i;
+      }
+      this.Nodes = resJson;
+      this.setState({nodes : this.Nodes, chosen : this.chosenNode, connected : this.createConn(this.chosenNode), page : this.page})
+    } else if (this.page > 0) {
+      this.page--;
+      alert("last page");
+    }
   }
 
+  componentDidMount() {
+    this.loadTable();
+  };
+
   handleClick(i) {
-    var conn = []
-    var node = this.Nodes[i]
-    node.Details._peer.map((id) => {
-       if (this.aMap[id] !== undefined) {
-          conn.push(this.aMap[id])
-       }
-    })
-    this.setState({nodes : this.Nodes, chosen : i, connected : conn})
+    this.chosenNode = this.Nodes[i];
+    this.setState({nodes : this.Nodes, chosen : this.chosenNode, connected : this.createConn(this.chosenNode)});
+  };
+
+  handlePage(change) {
+    this.page += change;
+    if (this.page < 0) {
+      this.page = 0;
+    }
+    this.loadTable();
+  }
+
+  createConn(node) {
+    var conn = [];
+    if (node) {
+      node._peer.forEach((id) => {
+        if (this.aMap[id] !== undefined) {
+           conn.push(this.aMap[id]);
+        }
+      });  
+    }
+    return conn;
   }
 
   render() {
-    console.log(this.state.nodes)
     return (
       <div className="App">
-        <Table nodes={this.state.nodes} connected = {this.state.connected} onClick={i => this.handleClick(i)} chosen={this.state.chosen}/>
-        <Map node={this.state.nodes[this.state.chosen]}/>
-        <InfoBar node={this.state.nodes[this.state.chosen]}/>
-        <PeersBar node={this.state.nodes[this.state.chosen]} />
+        <Table page={this.state.page} nodes={this.state.nodes} connected = {this.state.connected} 
+          onClick={i => this.handleClick(i)} chosen={this.state.chosen} changePage={i => this.handlePage(i)}/>
+        <Map node={this.state.chosen} />
+        <InfoBar node={this.state.chosen}/>
+        <PeersBar node={this.state.chosen} />
       </div>
     );
   }

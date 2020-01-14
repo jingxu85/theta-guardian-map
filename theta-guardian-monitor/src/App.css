@@ -5,18 +5,6 @@
   font-family: arial, sans-serif;
 }
 
-.nodeTable {
-  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
-  text-align: center;
-  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-  border-collapse: collapse;
-  border: 3px solid #ddd;
-  width: 60%;
-  height: 65%;
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-
 .nodeTable td, #students th {
   border: 1px solid #ddd;
 }
@@ -36,6 +24,11 @@
   width: 100%;
 }
 
+.pageButtton {
+  height: 10%;
+  width: 10%;
+}
+
 .background-red {
   background-color: red;
 }
@@ -48,39 +41,46 @@
   background-color: white;
 }
 
+.nodeTable {
+  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+  text-align: center;
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  border: 3px solid #ddd;
+  width: 50%;
+  height: 65%;
+  overflow-y: scroll;
+}
+
 .PeersBar {
   height: 33%; /* Full-height: remove this if you want "auto" height */
-  width: 45%; /* Set the width of the sidebar */
+  width: 49%; /* Set the width of the sidebar */
   position: fixed; /* Fixed Sidebar (stay in place on scroll) */
   z-index: 1; /* Stay on top */
   bottom: 0;
   right: 0px;
   border: 3px solid purple;
-  /* background-color: purple; */
-  overflow-x: hidden; /* Disable horizontal scroll */
-  /* padding-top: 20px; */
+  overflow-y: scroll;
 }
 
 .InfoBar {
-  height: 65%; /* Full-height: remove this if you want "auto" height */
-  width: 38%; /* Set the width of the sidebar */
+  height: 33%; /* Full-height: remove this if you want "auto" height */
+  width: 49%; /* Set the width of the sidebar */
+  bottom: 0;
+  left: 0px;
   position: fixed; /* Fixed Sidebar (stay in place on scroll) */
   z-index: 1; /* Stay on top */
-  top: 0;
-  right: 0px;
-  border: 3px solid pink;
-  /* background-color: purple; */
-  overflow-x: hidden; /* Disable horizontal scroll */
-  /* padding-top: 20px; */
+  border: 3px solid yellow;
+  overflow-y: scroll;
 }
 
 .Map {
-  height: 34%; /* Full-height: remove this if you want "auto" height */
-  width: 54%; /* Set the width of the sidebar */
+  height: 65%; /* Full-height: remove this if you want "auto" height */
+  width: 50%; /* Set the width of the sidebar */
+  top: 0;
+  right: 0px;
   position: fixed; /* Fixed Sidebar (stay in place on scroll) */
   z-index: 1; /* Stay on top */
-  bottom: 0;
-  left: 0px;
   /* border: 3px solid pink; */
   /* padding-top: 20px; */
 }

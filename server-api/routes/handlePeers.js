@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 var fs = require('fs');
 var Reader = require('@maxmind/geoip2-node').Reader;
+var mongoDB = require('../db/mongodbDriver');
 
 const db_file_path="./db/GeoIP2-City.mmdb";
 var geo2Ip = null;
@@ -45,6 +46,8 @@ class Node {
 		this._chain_id = body.chain_id
 		this._syncing = body.syncing
 		this._lastheight = body.LatestFinalizedBlockHeight
+		this._version = body.version
+		this._git_hash = body.git_hash
 	}
 
 	get id() {
@@ -86,7 +89,7 @@ class NodeMap {
 	}
 	
 	addNode(node){
-		if (this.nList.length > 100) {
+		if (this.nList.length > 500) {
 			this.amount++;
 			return;
 		}
@@ -115,8 +118,6 @@ class NodeMap {
 	get map() {
 		var nodes = [], k = ""
 		for (k in this.nMap) {
-			console.log("xj3 k is " + k.toString())
-			console.log("xj3 v is " + JSON.stringify(this.nMap[k]))
 			nodes.push({Peer: k, Details: this.nMap[k]})
 		}
 		return {Nodes : nodes};
@@ -130,31 +131,38 @@ class NodeMap {
 }
 
 router.post("/set", function(req, res, next) {
-	if (req.body.ip == "73.162.68.245") {// for developping
-		for (k in req.body) {
-			console.log("xj1 k is " + k.toString())
-			console.log("xj1 v is " + req.body[k].toString())
-		}	
-	}
 	newNode = new Node(req.body);
+	mongoDB.updateNode(newNode);
 	router.map1.addNode(newNode);
 	router.map2.addNode(newNode);
 	res.send("got it");
 });
 
 router.post("/get", function(req, res, next) {
-	var toReturn = null;
+	var toReturn = null, dbResult = {}, testDB2 = {};
 	if (router.useOne) {
 		toReturn = router.map1.map;
 	} else {
 		toReturn = router.map2.map;
 	}
-	for (k in toReturn) {
-		console.log("xj2 k is " + k.toString())
-		console.log("xj2 v is " + JSON.stringify(toReturn[k]))
-	}
-
+	// for (k in dbResult) {
+	// 	console.log("xj2 k is " + k.toString())
+	// 	console.log("xj2 v is " + JSON.stringify(testDB2[k]))
+	// }
 	res.json(toReturn);
+});
+
+router.post("/testdb", async function(req, res, next) {
+	var dbPromise = mongoDB.getNodesByPage(req.body.page, req.body.amount);
+	console.log("xj6 request body is ", req.body);
+	await dbPromise.then(function(value, error) {
+		if (error) {
+			console.log("failed to get value", error);
+			res.json(error);
+		} else {
+			res.json(value);
+		}
+	});
 });
 
 router.init = function() {
