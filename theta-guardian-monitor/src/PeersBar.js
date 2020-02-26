@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 class PeersBar extends Component {
     constructor(props) {
-        super(props)//since we are extending class Table so we have to use super in order to override Component class constructor
+        super(props);
     }
 
     renderInfo(){

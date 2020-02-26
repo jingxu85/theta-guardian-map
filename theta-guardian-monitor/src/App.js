@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Table from './Table.js'
-import Map from './Map.js'
+import GoogleMap from './GoogleMap.js'
 import InfoBar from './InfoBar.js'
 import PeersBar from './PeersBar.js'
 // import logo from './logo.svg';
@@ -8,13 +8,13 @@ import './App.css';
 
 class App extends Component {
   constructor(props) {
-      super(props);
-      this.page = 0;
-      this.aMap = {};
-      this.chosenNode = null;
-      this.state = { nodes : [], chosen : this.chosenNode, connected : [], page : 0};
+    super(props);
+    this.page = 0;
+    this.aMap = {};
+    this.chosenNode = null;
+    this.state = { nodes : [], chosen : this.chosenNode, connected : [], page : 0};
   }
-  
+
   async loadTable() {
     // pagination
     const test_response = await fetch('http://guardian-metrics.thetatoken.org:9000/peers/testdb', {
@@ -23,7 +23,7 @@ class App extends Component {
        body: JSON.stringify({ page: this.page, amount: 100}),
     });
     var resJson = await test_response.json();
-    console.log("for test DB, response is ", resJson);
+    console.log("xj1 ", resJson);
     if (resJson && resJson.length > 0) {
       for (let i = 0; i < resJson.length; i++) {
         this.aMap[resJson[i]._id] = i;
@@ -70,7 +70,7 @@ class App extends Component {
       <div className="App">
         <Table page={this.state.page} nodes={this.state.nodes} connected = {this.state.connected} 
           onClick={i => this.handleClick(i)} chosen={this.state.chosen} changePage={i => this.handlePage(i)}/>
-        <Map node={this.state.chosen} />
+        <GoogleMap node={this.state.chosen} nodes={this.state.nodes} connected = {this.state.connected} zoom={11}/>
         <InfoBar node={this.state.chosen}/>
         <PeersBar node={this.state.chosen} />
       </div>
